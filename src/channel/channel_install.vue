@@ -7,6 +7,7 @@
       text-color="#fff"
       ref="menus"
       :unique-opened=true
+      @select="selectItems"
       @open="handleOpen"
       @close="handleClose">
       <el-submenu index="1">
@@ -16,7 +17,7 @@
         </template>
           <el-menu-item index="1-1">渠道设置</el-menu-item>
           <el-menu-item index="1-2">商品设置</el-menu-item>
-          <el-menu-item index="1-3">添加</el-menu-item>
+          <el-menu-item index="1-3">商品添加</el-menu-item>
       </el-submenu>
       <el-submenu index="2">
         <template slot="title">
@@ -35,33 +36,64 @@
         <el-menu-item index="3-1">添加</el-menu-item>
       </el-submenu>
     </el-menu>
+	<div class="rightbox">
+    <Chanelist v-if="open=='1'"></Chanelist>
+    <Channeinstall v-if="open=='1-1'"></Channeinstall>
+    <Goodslist v-if="open=='1-2'"></Goodslist>
+    <Goodsinstall v-if="open=='1-3'"></Goodsinstall>
+    <Businesslist v-if="open=='2'"></Businesslist>
+
+	</div>
 </div>
 </template>
 
+
 <script>
+import Chanelist from '../components/channellist.vue'
+import Goodslist from '../components/goodslist.vue'
+import Businesslist from '../components/businesslist.vue'
+import Channeinstall from '../components/channeinstall.vue'
+import Goodsinstall from '../components/goodsinstall.vue'
 export default {
   name: 'channel_install',
   data() {
       return {
-        open: true
+        open: ''
       }
     },
   methods: {
     handleOpen(key, keyPath){
-      console.log(key, keyPath)
-      console.log(this.open)
+      // console.log(key, keyPath)
+      this.open = key
     },
     handleClose(key, keyPath){
-      console.log(key, keyPath)
+      this.open = key
+      // console.log(key, keyPath)
+    },
+    selectItems(key, keyPath){
+      this.open = key
+      console.log(key, keyPath,this.open)
     }
+  },
+  components: {
+      Chanelist,
+      Channeinstall,
+      Businesslist,
+      Goodslist,
+      Goodsinstall
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
+  .channel_install{
+    display: flex;
+    overflow:hidden
+  }
 .el-menu{
   width: 220px;
+  flex: 220px;
   min-height: 100%;
   overflow-x: hidden;
   background-color: #545c64 !important;
@@ -110,19 +142,14 @@ export default {
           color: rgba(255,255,255,.7)!important;
       }
 }
-
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+.rightbox{
+  margin-left: 220px;
+	margin-top: 90px;
+  width: calc(100% - 220px);
+  background-color: #f2f2f2;
+  color: #666;
+  min-height: 100%;
+  overflow-x: hidden;
+  position: fixed;
 }
 </style>
