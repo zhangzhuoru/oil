@@ -25,8 +25,56 @@
              <el-radio label="广东"></el-radio>
            </el-radio-group>
         </el-form-item>
+        <div class="tablebox">
+          <el-table
+              :data="tableData"
+              border
+              style="width: 100%">
+              <el-table-column
+                prop="date"
+                label="渠道"
+                width="160">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="商品编码"
+                width="160">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="面额"
+                width="160">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="折扣"
+                width="160">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="类型"
+                width="160">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="创建时间"
+                width="160">
+              </el-table-column>
+
+              <el-table-column
+                label="操作">
+                <template slot-scope="scope">
+                  <el-switch
+                    v-model="scope.row.value"
+                    active-color="#13ce66"
+                    inactive-color="#999">
+                  </el-switch>
+                </template>
+              </el-table-column>
+            </el-table>
+        </div>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -73,7 +121,43 @@ export default {
         desc: [
           { required: true, message: '请填写活动形式', trigger: 'blur' }
         ]
-      }
+      },
+      tableData: [{
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        value:true
+      }, {
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        value:false
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        value:true
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        value:true
+      }, {
+        date: '2016-05-08',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        value:true
+      }, {
+        date: '2016-05-06',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        value:true
+      }, {
+        date: '2016-05-07',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄',
+        value:false
+      }],
     }
   },
     methods: {
@@ -102,10 +186,15 @@ export default {
     .el-select {
         width: 100%;
     }
+    .tablebox{
+      padding: 10px 15px;
+    }
   }
   .frombox {
-    width: 520px;
     padding: 15px;
   }
+  .frombox/DEEP/.el-form-item__content{
+      width: 520px;
+    }
 
 </style>
