@@ -1,14 +1,24 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import ChannelInstall from '../channel/channel_install.vue'
+import Main from '../channel/main.vue'
+import Login from '../channel/login.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'channel_install',
-    component: ChannelInstall
+    redirect: '/login'
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    path: '/main',
+    name: 'main',
+    component: Main
   }
 ]
 

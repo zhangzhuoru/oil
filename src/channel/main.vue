@@ -1,5 +1,5 @@
 <template>
-  <div class="channel_install">
+  <div class="main">
      <el-menu
       default-active="2"
       class="el-menu-vertical-demo"
@@ -85,7 +85,7 @@ import Downgoodslist from '../components/downgoodslist.vue'
 import Goodsgroup from '../components/goodsgroup.vue'
 import Goodsgroupinstall from '../components/goodsgroupinstall.vue'
 export default {
-  name: 'channel_install',
+  name: 'main',
   data() {
       return {
         open: '0',
@@ -106,7 +106,14 @@ export default {
           '3-1':'商品组添加'
         },
         targetn:'首页',
-        addis:true
+        addis:true,
+        lastopen:'0'
+      }
+    },
+    watch:{
+      open: function(newv,oldv){
+        console.log(newv,oldv)
+        this.lastopen=oldv
       }
     },
   methods: {
@@ -163,6 +170,17 @@ export default {
 
       this.editableTabsValue = activeName;
       this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+      console.log(this.editableTabs,this.editableTabsValue)
+      for(let i = 0; i<this.editableTabs.length;i++){
+
+        if(this.editableTabsValue ==this.editableTabs[i].name){
+          for(var key in this.target){
+            if(this.target[key]==this.editableTabs[i].title){
+              this.open = key
+            }
+          }
+        }
+      }
     },
     changetab(targetName) {
       console.log(targetName,1,this.target)
@@ -203,7 +221,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-  .channel_install{
+  .main{
     display: flex;
     overflow:hidden
   }

@@ -37,6 +37,23 @@
     <div class="yue gonghuo">
       供币商商户余额
     </div>
+    <div class="hejitip">
+      合计：<span>¥{{xheji}}</span>元（因部分接口有查询时限，此处数足仅供参考，如需准物值请登录供货注斫提供的后台）
+    </div>
+    <div class="shihua">
+      <div class="shitem">
+        <div class="itembox">
+          <div class="itpng">
+            <img src="../assets/yue.png" alt="">
+          </div>
+          <div class="ittxt">
+            <div class="ittxt1">中石化1</div>
+            <div class="ittxt2">可用余额（元）</div>
+            <div class="ittxt3">{{yue}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,7 +64,8 @@ export default {
     return {
       yue:1648.264,
       edu:19846.65974,
-      heji:0
+      heji:0,
+      xheji:131313.1312
     }
   },
   mounted: function () {
@@ -55,6 +73,7 @@ export default {
      this.heji=this.yue+this.edu
     this.yue= this.msg(this.yue)
     this.edu= this.msg(this.edu)
+    this.xheji= this.msg(this.xheji)
 
     this.heji= this.msg(this.heji)
   },
@@ -124,6 +143,15 @@ export default {
     .gonghuo{
       margin-top: 100px;
     }
+    .hejitip{
+      font-size: 16px;
+      text-align: left;
+      margin-left: 50px;
+      margin-top: 30px;
+      span{
+        color: orange;
+      }
+    }
   }
   .showbox{
     display: flex;
@@ -174,6 +202,41 @@ export default {
         color: orange;
         font-size: 24px;
         }
+    }
+  }
+  .shihua{
+    margin-top: 20px;
+    margin-bottom: 30px;
+    .itembox{
+      padding: 20px 0;
+      border: 1px solid #999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 25%;
+      box-sizing: border-box;
+      .itpng{
+        width: 65px;
+        height: 65px;
+      }
+      .itpng img{
+        width: 100%;
+        height: 100%;
+      }
+      .ittxt{
+        margin-left: 30px;
+      }
+      .ittxt .ittxt1{
+        font-size: 16px;
+      }
+      .ittxt .ittxt2{
+        font-size: 14px;
+        margin-top: 10px;
+      }
+      .ittxt .ittxt3{
+        font-size: 22px;
+        margin-top: 10px;
+      }
     }
   }
 </style>
