@@ -6,51 +6,54 @@
 
     <div class="tablebox">
       <el-table
-          :data="tableData"
+          :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
           border
           style="width: 100%">
           <el-table-column
-            prop="date"
+            fixed
+            prop="voucher_user_id"
             label="商户Id"
-            width="160">
+            width="180">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="voucher_name"
             label="商户名"
             width="120">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="balance"
             label="余额"
             width="120">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="amount"
             label="额度"
             width="120">
           </el-table-column>
           <el-table-column
-            prop="name"
             label="允许挂单"
             width="120">
+            <template slot-scope="scope">
+              {{scope.$index==0?'是':'否'}}
+            </template>
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="voucher_account"
             label="账号"
             width="120">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="contact_name"
             label="联系人"
             width="120">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="contact_phone"
             label="联系电话"
             width="160">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="start_time"
             label="创建时间"
             width="160">
           </el-table-column>
@@ -72,8 +75,12 @@
     <div class="pagbox">
       <el-pagination
         background
-        layout="prev, pager, next"
-        :total="1000">
+        layout="total,prev,pager,next,jumper"
+        :total="tableData.length"
+        :page-size="pagesize"
+        :pager-count="pagerCount"
+        :current-page="currentPage"
+        @current-change="handleCurrentChange">
       </el-pagination>
     </div>
   </div>
@@ -85,36 +92,28 @@ export default {
   data() {
     return {
       input: '',
+      pages:{
+        per_page:20
+      },
+      pagesize:5,
+      currentPage:1,
+      pagerCount:5,
       tableData: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }]
+        voucher_user_id: '',
+        voucher_name: '',
+        balance: '',
+        amount:'',
+        type:0,
+        voucher_account:'',
+        contact_name:'',
+        contact_phone:'',
+        start_time:''
+      }],
+      total:1
     }
+  },
+  created(){
+    this.getpage()
   },
     methods: {
       handleEdit(index, row) {
@@ -122,6 +121,32 @@ export default {
       },
       handlexing(index, row) {
         console.log(index, row);
+      },
+      handleCurrentChange(val){
+        this.currentPage = val;
+      },
+      async getpage(){
+        // console.log(key, keyPath)
+       try {
+         //供货商列表
+         let res = await this.$http.get("vouchers/findAllVoucherUser", this.pages)
+         this.result = res
+        } catch (err) {
+                console.log(err)
+                alert('请求出错！')
+              }
+          // if(this.result.)
+        if(this.result.status === 201||this.result.status === 200){
+          console.log(this.result.status === 201)
+          this.tableData=this.result.data.data.data
+          this.total=this.result.data.data.last_page
+          this.$message.success('请求成功！')
+        }else{
+          console.log(this.result.status=='201')
+          this.$message.error('请求失败！')
+        }
+        console.log('result',this.result.data.data)
+
       }
     }
 }

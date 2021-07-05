@@ -5,6 +5,11 @@ import './plugins/element.js'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 axios.defaults.baseURL = "http://gas-test.changyuan.biz:30001/api/admin/"
+axios.interceptors.request.use(config =>{
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  // console.log(config)
+  return config
+})
 Vue.prototype.$http = axios
 
 import {

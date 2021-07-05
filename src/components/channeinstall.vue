@@ -2,23 +2,23 @@
   <div class="channeinstall">
     <div class="frombox">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-        <el-form-item label="渠道名" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="渠道名" prop="supplier_name">
+          <el-input v-model="ruleForm.supplier_name"></el-input>
         </el-form-item>
-        <el-form-item label="渠道编号" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="渠道编号" prop="supplier_id">
+          <el-input v-model="ruleForm.supplier_id"></el-input>
         </el-form-item>
-        <el-form-item label="账号" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="账号" prop="voucher_account">
+          <el-input v-model="ruleForm.voucher_account"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="密码" prop="voucher_pwd">
+          <el-input v-model="ruleForm.voucher_pwd"></el-input>
         </el-form-item>
-        <el-form-item label="每日额度(元)" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="每日额度(元)" prop="daily_limit">
+          <el-input v-model="ruleForm.daily_limit"></el-input>
         </el-form-item>
-        <el-form-item label="描述" prop="desc">
-          <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+        <el-form-item label="描述" prop="description">
+          <el-input type="textarea" v-model="ruleForm.description"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
@@ -33,49 +33,87 @@
 <script>
 export default {
   name: 'channeinstall',
+  //父组件通过props属性传递进来的数据
+  props: {
+      qdmsg: {
+        balance: "",
+        balance_url: "",
+        callback_url: "",
+        created_at: "",
+        daily_limit: 0,
+        order_search_url: "",
+        order_url: "",
+        passageway_no: "",
+        platform_balance: "",
+        supplier_id: "",
+        supplier_name: "",
+        updated_at: "",
+        voucher_account: "",
+        voucher_pwd: "",
+        voucher_secret: ""
+      }
+  },
   data() {
     return {
       ruleForm: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        supplier_name: '',
+        supplier_id: '',
+        voucher_account: '',
+        voucher_pwd: '',
+        daily_limit: '',
+        description: '',
+        order_url:'',
+        callback_url:'',
+        balance_url:'',
+        order_search_url:'',
+
       },
       rules: {
-        name: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        supplier_name: [
+          { required: true, message: '请输入渠道名', trigger: 'blur' },
+          { min: 5, max: 20, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        region: [
-          { required: true, message: '请选择活动区域', trigger: 'change' }
+        supplier_id: [
+          { required: true, message: '请填写渠道编号', trigger: 'blur' }
         ],
-        date1: [
-          { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+        voucher_account: [
+          { required: true, message: '请填写账号', trigger: 'blur' }
         ],
-        date2: [
-          { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+        voucher_pwd: [
+          { required: true, message: '请填写密码', trigger: 'blur' }
         ],
-        type: [
-          { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-        ],
-        resource: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ],
-        desc: [
-          { required: true, message: '请填写活动形式', trigger: 'blur' }
+        daily_limit: [
+          { required: true, message: '请填写每日额度(元)', trigger: 'blur' }
         ]
-      }
+      },
+      updata:false,
+      result:''
     }
   },
+  created(){
+    console.log(this.qdmsg)
+    if(this.qdmsg.supplier_name){
+      let str = JSON.stringify(this.qdmsg) //系列化对象
+      this.ruleForm = JSON.parse(str) //还原
+      this.ruleForm.voucher_pwd = ''
+      this.updata =true
+      console.log('ruleForm',this.ruleForm)
+    }
+  },
+  //&&this.ruleForm.supplier_id==this.qdmsg.supplier_id
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.ruleForm.supplierId = this.ruleForm.supplier_id
+            if(this.updata&&this.ruleForm.supplier_id==this.qdmsg.supplier_id){
+               this.updataajx()
+               console.log(1,this.ruleForm.supplier_id,this.qdmsg.supplier_id)
+            }else{
+              this.creajx()
+              console.log(2)
+            }
+
           } else {
             console.log('error submit!!');
             return false;
@@ -83,7 +121,53 @@ export default {
         });
       },
       resetForm(formName) {
-        this.$refs[formName].resetFields();
+        this.ruleForm = {
+          supplier_name: '',
+          supplier_id: '',
+          voucher_account: '',
+          voucher_pwd: '',
+          daily_limit: '',
+          description: ''
+        }
+        this.updata = false
+        // console.log(this.ruleForm)
+        // this.$refs[formName].resetFields();
+        console.log(this.ruleForm)
+      },
+      async updataajx(){
+        try {
+          //修改供货商
+          let res = await this.$http.post("suppliers/updateVoucherSupplier", this.ruleForm)
+          this.result = res
+         } catch (err) {
+                 alert('请求出错！')
+               }
+         if(this.result.status === 201||this.result.status === 200){
+           this.$message.success('修改成功！')
+           this.justchange('1')
+         }else{
+           this.$message.error('请求失败！')
+         }
+         console.log('result',this.result.data.data)
+      },
+      async creajx(){
+        try {
+          //修改供货商
+          let res = await this.$http.post("suppliers/createVoucherSupplier", this.ruleForm)
+          this.result = res
+         } catch (err) {
+                 alert('请求出错！')
+               }
+         if(this.result.status === 201||this.result.status === 200){
+           this.$message.success('请求成功！')
+           this.justchange('1')
+         }else{
+           this.$message.error('请求失败！')
+         }
+         console.log('result',this.result.data.data)
+      },
+      justchange(test){
+          this.$emit('justchange' , test);
       }
     }
 }

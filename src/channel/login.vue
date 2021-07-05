@@ -42,15 +42,34 @@ export default {
           grant_type:'password',
           client_secret:'LhBUQAJf5UH0qu3MyCZ10chvrKr8qJEpvfupOOPK',
           client_id:'1'
-
-        }
+        },
+        result:''
       }
     },
   methods: {
-    login(){
+    async login(){
       // console.log(key, keyPath)
-      const result =  this.$http.post("voucherAdminLogin", this.pass);
-      console.log(result)
+     try {
+       let res = await this.$http.post("voucherAdminLogin", this.pass)
+       this.result = res
+      } catch (err) {
+              console.log(err)
+              alert('请求出错！')
+            }
+        // if(this.result.)
+      if(this.result.status === 201||this.result.status === 200){
+        console.log(this.result.status === 201)
+
+        this.$message.success('登录成功！')
+        
+        window.sessionStorage.setItem('token',this.result.data.token_type+' '+this.result.data.access_token)
+        this.$router.push('/about')
+      }else{
+        console.log(this.result.status=='201')
+        this.$message.error('登录失败！')
+      }
+      console.log('result',this.result)
+
     },
     handleClose(key, keyPath){
       this.open = key

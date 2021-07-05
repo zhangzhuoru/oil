@@ -1,5 +1,6 @@
 <template>
-  <div class="main">
+  <div class="about">
+    <!-- :collapse="isCollapse" -->
      <el-menu
       default-active="2"
       class="el-menu-vertical-demo"
@@ -36,6 +37,23 @@
         <el-menu-item index="3-1">商品组添加</el-menu-item>
       </el-submenu>
     </el-menu>
+  <div class="listhear">
+    <div class="hearlbox">
+      <!-- <i class="el-icon-set-up" @click="openlist"></i> -->
+      <i class="el-icon-full-screen"></i>
+    </div>
+    <div class="hearrbox">
+       <el-dropdown @command="handleCommand">
+        <span class="el-dropdown-link">
+          {{usename}}<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="a">修改密码</el-dropdown-item>
+          <el-dropdown-item command="b">退出</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
+  </div>
   <div class="listbat">
     <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab" @tab-click = 'changetab'>
       <el-tab-pane
@@ -55,9 +73,9 @@
 	<div class="rightbox">
 
     <Home v-if="open=='0'"></Home>
-    <Chanelist v-if="open=='1'"></Chanelist>
-    <Channeinstall v-if="open=='1-1'"></Channeinstall>
-    <Goodslist v-if="open=='1-2'"></Goodslist>
+    <Chanelist v-if="open=='1'" @justchange="justchange" @justmsg="justmsg" @justchanger="justchanger"></Chanelist>
+    <Channeinstall v-if="open=='1-1'" :qdmsg="qdmsg" @justchange="justchange"></Channeinstall>
+    <Goodslist v-if="open=='1-2'" @justchange="justchange"></Goodslist>
     <Goodsinstall v-if="open=='1-3'"></Goodsinstall>
     <Businesslist v-if="open=='2'"></Businesslist>
     <Businessinstall v-if="open=='2-1'"></Businessinstall>
@@ -85,13 +103,32 @@ import Downgoodslist from '../components/downgoodslist.vue'
 import Goodsgroup from '../components/goodsgroup.vue'
 import Goodsgroupinstall from '../components/goodsgroupinstall.vue'
 export default {
-  name: 'main',
+  name: 'about',
   data() {
       return {
+        qdmsg:{
+          balance: "",
+          balance_url: "",
+          callback_url: "",
+          created_at: "",
+          daily_limit: 0,
+          order_search_url: "",
+          order_url: "",
+          passageway_no: "",
+          platform_balance: "",
+          supplier_id: "",
+          supplier_name: "",
+          updated_at: "",
+          voucher_account: "",
+          voucher_pwd: "",
+          voucher_secret: ""
+        },
+        usename:'666',
         open: '0',
         editableTabsValue: '1',
         editableTabs: [],
         tabIndex: 1,
+        // isCollapse:true,
         target:{
           '0':'首页',
           '1':'渠道列表',
@@ -129,11 +166,34 @@ export default {
       this.addTab(this.targetn)
       // console.log(key, keyPath)
     },
+    //点击子菜单
     selectItems(key, keyPath){
       this.open = key
       this.targetn = this.target[this.open]
       this.addTab(this.targetn)
+      console.log(1,key)
+      if(key == '1-1'){
+        this.qdmsg={
+          balance: "",
+          balance_url: "",
+          callback_url: "",
+          created_at: "",
+          daily_limit: 0,
+          order_search_url: "",
+          order_url: "",
+          passageway_no: "",
+          platform_balance: "",
+          supplier_id: "",
+          supplier_name: "",
+          updated_at: "",
+          voucher_account: "",
+          voucher_pwd: "",
+          voucher_secret: ""
+        }
+      }
+
     },
+    //添加列表item
     addTab(targetName) {
       // if(targetName==this.targetn) return
       let newTabName = ++this.tabIndex + '';
@@ -154,6 +214,7 @@ export default {
       }
 
     },
+    //关闭列表item
     removeTab(targetName) {
       let tabs = this.editableTabs;
       let activeName = this.editableTabsValue;
@@ -170,7 +231,7 @@ export default {
 
       this.editableTabsValue = activeName;
       this.editableTabs = tabs.filter(tab => tab.name !== targetName);
-      console.log(this.editableTabs,this.editableTabsValue)
+      console.log(this.editableTabs.length,this.editableTabsValue)
       for(let i = 0; i<this.editableTabs.length;i++){
 
         if(this.editableTabsValue ==this.editableTabs[i].name){
@@ -181,26 +242,45 @@ export default {
           }
         }
       }
+      if(this.editableTabs.length==0){
+        this.open = 0
+      }
     },
+    //点击激活列表item
     changetab(targetName) {
-      console.log(targetName,1,this.target)
+      // console.log(targetName,1,this.target)
       for(var key in this.target){
         if(this.target[key]==targetName.label){
           this.open = key
         }
       }
-    //   if (activeName === targetName) {
-    //     tabs.forEach((tab, index) => {
-    //       if (tab.name === targetName) {
-    //         let nextTab = tabs[index + 1] || tabs[index - 1];
-    //         if (nextTab) {
-    //           activeName = nextTab.name;
-    //         }
-    //       }
-    //     });
-    //   }
-
-
+    },
+    openlist(){
+      this.isCollapse = !this.isCollapse
+    },
+    handleCommand(command) {
+      console.log(command)
+      if(command == 'b'){
+        window.sessionStorage.clear();
+        this.$router.push('/login')
+      }
+      this.$message.success('退出登录，请重新登录');
+    },
+    //子传父
+    justchange(msg){
+       console.log(msg)
+       this.open = msg
+       this.targetn = this.target[this.open]
+       this.addTab(this.targetn)
+    },
+    justchanger(msg){
+      console.log('msg',msg)
+       this.selectItems(msg)
+    },
+    //子传父
+    justmsg(msg){
+       console.log(msg)
+       this.qdmsg=msg
     }
   },
   components: {
@@ -221,25 +301,68 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-  .main{
+  .about{
     display: flex;
-    overflow:hidden
+    overflow:hidden;
   }
   //列表按钮
   .listbat{
     width: 100%;
-    margin-left: 220px;
+    left: 0;
+    padding-left: 220px;
     box-sizing: border-box;
-    height: 90px;
-    padding-top: 50px;
-
+    height: 40px;
+    position: absolute;
+    top: 50px;
+    z-index: 1;
   }
   .el-tabs--card>.el-tabs__header .el-tabs__item.is-active.is-closable:first-child/deep/ .el-icon-close, .el-tabs--card>.el-tabs__header .el-tabs__item.is-closable:hover .el-icon-close{
       width: 0;
   }
+  //列表hear
+  .listhear{
+    width: 100%;
+    margin-left: 220px;
+    box-sizing: border-box;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    .hearlbox{
+      height: 100%;
+      font-size: 16px;
+      line-height: 50px;
+      padding: 0 10px;
+      color: #333;
+      cursor: pointer;
+      i{
+        margin: 0 20px;
+        color: #333;
+      }
+    }
+    .hearrbox{
+      .el-dropdown-link {
+        cursor: pointer;
+        line-height: 50px;
+      }
+      .el-icon-arrow-down {
+        font-size: 12px;
+      }
+      .demonstration {
+        display: block;
+        color: #8492a6;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+    }
+  }
+  .el-menu-vertical-demo:not(.el-menu--collapse) {
+      width: 220px;
+      flex: 220px;
+    }
+	//左边列表css
 .el-menu{
-  width: 220px;
-  flex: 220px;
+  // width: 220px;
+  // flex: 220px;
   min-height: 100%;
   overflow-x: hidden;
   background-color: #545c64 !important;
@@ -249,6 +372,7 @@ export default {
   left: 0;
   top: 0;
   bottom: 0;
+  z-index: 2;
   .el-submenu li {
       padding-left: 50px!important;
       text-align: left;
@@ -291,7 +415,9 @@ export default {
 .rightbox{
   margin-left: 220px;
 	margin-top: 90px;
-  width: calc(100% - 220px);
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
   background-color: #f2f2f2;
   color: #666;
   min-height: 100%;

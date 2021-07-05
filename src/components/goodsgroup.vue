@@ -41,26 +41,27 @@
 
     <div class="tablebox">
       <el-table
-          :data="tableData"
+          :data="tableData.slice((currentPage-1)*pagesize,currentPage*pagesize)"
           border
           style="width: 100%">
           <el-table-column
-            prop="date"
+            fixed
+            prop="group_name"
             label="分组名称"
             width="160">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="amount"
             label="面额"
             width="160">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="supplier_name"
             label="渠道名称"
             width="160">
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="discount"
             label="渠道折扣"
             width="160">
           </el-table-column>
@@ -75,7 +76,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="created_at"
             label="创建时间"
             width="160">
           </el-table-column>
@@ -97,8 +98,12 @@
     <div class="pagbox">
       <el-pagination
         background
-        layout="prev, pager, next"
-        :total="1000">
+        layout="total,prev,pager,next,jumper"
+        :total="tableData.length"
+        :page-size="pagesize"
+        :pager-count="pagerCount"
+        :current-page="currentPage"
+        @current-change="handleCurrentChange">
       </el-pagination>
     </div>
   </div>
@@ -110,42 +115,20 @@ export default {
   data() {
     return {
       input: '',
+      pages:{
+        per_page:20
+      },
+      pagesize:5,
+      currentPage:1,
+      pagerCount:5,
       tableData: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        value:true
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        value:false
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        value:true
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        value:true
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        value:true
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        value:true
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        value:false
+        group_name: '',
+        amount: '',
+        supplier_name: '',
+        discount:'',
+        created_at:''
       }],
+      total:1,
       options: [{
         value: '选项1',
         label: '黄金糕'
@@ -165,12 +148,41 @@ export default {
       value: ''
     }
   },
+  created(){
+    this.getpage()
+  },
     methods: {
       handleEdit(index, row) {
         console.log(index, row);
       },
       handleDelete(index, row, scope) {
         console.log(index, row, scope);
+      },
+      handleCurrentChange(val){
+        this.currentPage = val;
+      },
+      async getpage(){
+        // console.log(key, keyPath)
+       try {
+         //供货商列表
+         let res = await this.$http.get("good-groups/findAllVoucherGroup", this.pages)
+         this.result = res
+        } catch (err) {
+                console.log(err)
+                alert('请求出错！')
+              }
+          // if(this.result.)
+        if(this.result.status === 201||this.result.status === 200){
+          console.log(this.result.status === 201)
+          this.tableData=this.result.data.data.data
+          this.total=this.result.data.data.last_page
+          this.$message.success('请求成功！')
+        }else{
+          console.log(this.result.status=='201')
+          this.$message.error('请求失败！')
+        }
+        console.log('result',this.result.data.data)
+
       }
     }
 }
