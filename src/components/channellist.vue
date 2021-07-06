@@ -101,6 +101,11 @@ export default {
         voucher_account:'',
         created_at:''
       }],
+      dlid:{
+        supplierId:''
+      },
+
+      dlres:'',
       total:1
     }
   },
@@ -117,10 +122,27 @@ export default {
         this.$emit('justmsg' , msg);
       },
       install(index, row) {
-        // console.log(index, row);
+        console.log(index, row);
+        this.justqdid(row.supplier_id)
         this.justchange('1-2')
       },
-      handleDelete(index, row) {
+      async handleDelete(index, row) {
+        this.dlid.supplierId = row.supplier_id
+        try {
+          //删除供货商
+          let res = await this.$http.post("suppliers/deleteVoucherSupplier", this.dlid)
+          this.dlres = res
+         } catch (err) {
+                 this.$message.error('删除失败！')
+         }
+           // if(this.result.)
+         if(this.dlres.status === 201||this.dlres.status === 200){
+           this.getpage()
+           this.$message.success('删除成功！')
+         }else{
+           // console.log(this.result.status=='201')
+           this.$message.error('删除失败！')
+         }
         console.log(index, row);
       },
       handleCurrentChange(val){
@@ -140,7 +162,7 @@ export default {
         if(this.result.status === 201||this.result.status === 200){
           this.tableData=this.result.data.data.data
           this.total=this.result.data.data.last_page
-          this.$message.success('请求成功！')
+          // this.$message.success('请求成功！')
         }else{
           // console.log(this.result.status=='201')
           this.$message.error('请求失败！')
@@ -155,6 +177,10 @@ export default {
       justchanger(test){
         console.log('justchanger' , test)
           this.$emit('justchanger' , test);
+      },
+      justqdid(test){
+        console.log('justqdid' , test)
+          this.$emit('justqdid' , test);
       }
     }
 }

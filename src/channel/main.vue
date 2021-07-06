@@ -14,20 +14,20 @@
       <el-submenu index="1">
         <template slot="title">
           <i class="el-icon-location"></i>
-          <span>渠道列表</span>
+          <span>上游渠道列表</span>
         </template>
-          <el-menu-item index="1-1">渠道设置</el-menu-item>
-          <el-menu-item index="1-2">商品设置</el-menu-item>
-          <el-menu-item index="1-3">商品添加</el-menu-item>
+          <el-menu-item index="1-1">上游渠道设置</el-menu-item>
+          <!-- <el-menu-item index="1-2">上游商品设置</el-menu-item>
+          <el-menu-item index="1-3">上游商品添加</el-menu-item> -->
       </el-submenu>
       <el-submenu index="2">
         <template slot="title">
           <i class="el-icon-menu"></i>
-          <span slot="title">商户列表</span>
+          <span slot="title">下游商户列表</span>
         </template>
-        <el-menu-item index="2-1">商户添加</el-menu-item>
-        <el-menu-item index="2-2">商户授信</el-menu-item>
-        <el-menu-item index="2-3">商品设置</el-menu-item>
+        <!-- <el-menu-item index="2-1">下游商户添加</el-menu-item>
+        <el-menu-item index="2-2">下游商户授信</el-menu-item>
+        <el-menu-item index="2-3">下游商品设置</el-menu-item> -->
       </el-submenu>
       <el-submenu index="3">
         <template slot="title">
@@ -73,12 +73,12 @@
 	<div class="rightbox">
 
     <Home v-if="open=='0'"></Home>
-    <Chanelist v-if="open=='1'" @justchange="justchange" @justmsg="justmsg" @justchanger="justchanger"></Chanelist>
+    <Chanelist v-if="open=='1'" @justchange="justchange" @justmsg="justmsg" @justchanger="justchanger" @justqdid="justqdid"></Chanelist>
     <Channeinstall v-if="open=='1-1'" :qdmsg="qdmsg" @justchange="justchange"></Channeinstall>
-    <Goodslist v-if="open=='1-2'" @justchange="justchange"></Goodslist>
-    <Goodsinstall v-if="open=='1-3'"></Goodsinstall>
-    <Businesslist v-if="open=='2'"></Businesslist>
-    <Businessinstall v-if="open=='2-1'"></Businessinstall>
+    <Goodslist v-if="open=='1-2'" @justchange="justchange" @justsysp = 'justsysp' :qdid="qdid"></Goodslist>
+    <Goodsinstall v-if="open=='1-3'" :qdid="qdid" :syspmsg="syspmsg" @justchange="justchange" ></Goodsinstall>
+    <Businesslist v-if="open=='2'" @justchange="justchange" @justsrmsg="justsrmsg"></Businesslist>
+    <Businessinstall v-if="open=='2-1'" :srmsg="srmsg" @justchange="justchange"></Businessinstall>
     <Creditinstall v-if="open=='2-2'"></Creditinstall>
     <Downgoodslist v-if="open=='2-3'"></Downgoodslist>
     <Goodsgroup v-if="open=='3'"></Goodsgroup>
@@ -123,6 +123,19 @@ export default {
           voucher_pwd: "",
           voucher_secret: ""
         },
+        syspmsg:{
+          amount: "",
+          created_at: "",
+          discount: "",
+          good_code: "",
+          pay_amount: "",
+          province: "",
+          supplier_good_id: "",
+          supplier_id: "",
+          supplier_name: "",
+          type: 2,
+          updated_at: ""
+        },
         usename:'666',
         open: '0',
         editableTabsValue: '1',
@@ -131,20 +144,22 @@ export default {
         // isCollapse:true,
         target:{
           '0':'首页',
-          '1':'渠道列表',
-          '1-1':'渠道设置',
-          '1-2':'商品设置',
-          '1-3':'商品添加',
-          '2':'商户列表',
-          '2-1':'商户添加',
-          '2-2':'商户授信',
-          '2-3':'商品设置',
+          '1':'上游渠道列表',
+          '1-1':'上游渠道设置',
+          '1-2':'上游商品设置',
+          '1-3':'上游商品添加',
+          '2':'下游商户列表',
+          '2-1':'下游商户添加',
+          '2-2':'下游商户授信',
+          '2-3':'下游商品设置',
           '3':'商品组',
           '3-1':'商品组添加'
         },
         targetn:'首页',
         addis:true,
-        lastopen:'0'
+        lastopen:'0',
+        qdid:'',
+        srmsg:''
       }
     },
     watch:{
@@ -281,6 +296,21 @@ export default {
     justmsg(msg){
        console.log(msg)
        this.qdmsg=msg
+    },
+    //子传父1-2
+    justsysp(msg){
+       console.log(msg)
+       this.syspmsg=msg
+    },
+    //子传父1
+    justqdid(msg){
+       console.log(msg)
+       this.qdid=msg
+    },
+    //子传父2
+    justsrmsg(msg){
+       console.log(msg)
+       this.srmsg=msg
     }
   },
   components: {

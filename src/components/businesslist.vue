@@ -1,7 +1,7 @@
 <template>
   <div class="channelist">
     <div class="lable">
-      <div class="channeladd">新增</div>
+      <div class="channeladd" @click="gotoadd">新增</div>
     </div>
 
     <div class="tablebox">
@@ -53,7 +53,7 @@
             width="160">
           </el-table-column>
           <el-table-column
-            prop="start_time"
+            prop="created_at"
             label="创建时间"
             width="160">
           </el-table-column>
@@ -107,7 +107,7 @@ export default {
         voucher_account:'',
         contact_name:'',
         contact_phone:'',
-        start_time:''
+        created_at:''
       }],
       total:1
     }
@@ -116,11 +116,40 @@ export default {
     this.getpage()
   },
     methods: {
+      gotoadd(){
+        let black = {
+          amount: '',
+          balance: '',
+          contact_name: '',
+          contact_phone: '',
+          created_at: '',
+          credit_time: '',
+          description: '',
+          end_time: '',
+          simple_num: '',
+          created_at: '',
+          supplier_id: '',
+          supplier_name: '',
+          type: '',
+          updated_at: '',
+          voucher_account: '',
+          voucher_address: '',
+          voucher_name: '',
+          voucher_password: '',
+          voucher_secret: '',
+          voucher_user_id: ''
+        }
+        this.justsrmsg(black)
+        this.justchange('2-1')
+      },
       handleEdit(index, row) {
+        this.justsrmsg(row)
+        this.justchange('2-1')
         console.log(index, row);
       },
       handlexing(index, row) {
         console.log(index, row);
+        this.justchange('2-2')
       },
       handleCurrentChange(val){
         this.currentPage = val;
@@ -128,7 +157,7 @@ export default {
       async getpage(){
         // console.log(key, keyPath)
        try {
-         //供货商列表
+         //商人列表
          let res = await this.$http.get("vouchers/findAllVoucherUser", this.pages)
          this.result = res
         } catch (err) {
@@ -147,6 +176,12 @@ export default {
         }
         console.log('result',this.result.data.data)
 
+      },
+      justchange(test){
+        this.$emit('justchange' , test);
+      },
+      justsrmsg(test){
+        this.$emit('justsrmsg' , test);
       }
     }
 }

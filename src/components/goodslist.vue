@@ -1,19 +1,32 @@
 <template>
   <div class="goodsinstall">
     <div class="lable">
-      <div class="channeladd" @click="justchange('1-3')">新增</div>
+      <div class="channeladd" @click="gotopage('1-3')">新增</div>
       <div class="channelsch">搜索</div>
       <div class="channelsch"  @click="justchange('1')">返回渠道列表</div>
     </div>
-    <div class="inputbox">
-      <el-select v-model="value" placeholder="请选择">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
+    <div class="inputlist">
+      <div class="inputbox">
+        <el-select v-model="value" placeholder="类型">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
+      <div class="inputbox">
+        <el-select v-model="value2" placeholder="面额">
+          <el-option
+            v-for="item in options2"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
+
     </div>
 
     <div class="tablebox">
@@ -86,9 +99,14 @@
 <script>
 export default {
   name: 'goodsinstall',
+  //父组件通过props属性传递进来的数据
+  props: {
+      qdid: {}
+  },
   data() {
     return {
       input: '',
+      getid:{},
       pages:{
         per_page:20
       },
@@ -105,42 +123,90 @@ export default {
       }],
       total:1,
       options: [{
-        value: '选项1',
-        label: '黄金糕'
+        value: '中石油',
+        label: '中石油'
       }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
+        value: '中石化',
+        label: '中石化'
       }],
-      value: ''
+      value: '',
+      options2: [{
+        value: 100,
+        label: 100
+      }, {
+        value: 200,
+        label: 200
+      }, {
+        value: 300,
+        label: 300
+      }, {
+        value: 500,
+        label: 500
+      }, {
+        value: 800,
+        label: 800
+      }, {
+        value: 1000,
+        label: 1000
+      }],
+      value2: ''
     }
   },
   created(){
-    this.getpage()
+    this.getid.supplier_id = this.qdid
+    this.getid.per_page= 20
+    console.log('this.getid',this.getid)
+    this.getpage(this.getid)
   },
     methods: {
       handleEdit(index, row) {
         console.log(index, row);
+        this.justsysp(row)
+        this.justchange('1-3')
       },
       handleDelete(index, row) {
-        console.log(index, row);
+        console.log(index, row.supplier_good_id);
+        this.delpage(row.supplier_good_id)
       },
       handleCurrentChange(val){
         this.currentPage = val;
       },
-      async getpage(){
+      async delpage(id){
         // console.log(key, keyPath)
        try {
          //供货商列表
-         let res = await this.$http.get("supplier-goods/findAllVoucherSupplierGood")
+         console.log(id)
+         let res = await this.$http.post("supplier-goods/deleteVoucherSupplierGood",{
+             supplierGoodId:id
+         })
+         this.result = res
+        } catch (err) {
+                console.log(err)
+                alert('请求出错！')
+              }
+          // if(this.result.)
+        if(this.result.status === 201||this.result.status === 200){
+          console.log(this.result.status === 201)
+
+          this.$message.success('删除成功！')
+          this.getpage()
+        }else{
+          console.log(this.result.status=='201')
+          this.$message.error('删除失败！')
+        }
+        console.log('result',this.result.data.data)
+
+      },
+      async getpage(id){
+        // console.log(key, keyPath)
+       try {
+         //供货商列表
+         console.log(id)
+         let res = await this.$http.get("supplier-goods/findAllVoucherSupplierGood",{
+           params:{
+             supplier_id:this.getid.supplier_id,
+           }
+         })
          this.result = res
         } catch (err) {
                 console.log(err)
@@ -162,6 +228,26 @@ export default {
       // 子组件通过emit方法触发父组件中定义好的函数，从而将子组件中的数据传递给父组件
       justchange(test){
           this.$emit('justchange' , test);
+      },
+      // 子组件通过emit方法触发父组件中定义好的函数，从而将子组件中的数据传递给父组件
+      justsysp(test){
+          this.$emit('justsysp' , test);
+      },
+      gotopage(test){
+        let black = {
+          amount: "",
+          created_at: "",
+          discount: "",
+          good_code: "",
+          pay_amount: "",
+          province: [],
+          supplier_id: "",
+          supplier_name: "",
+          type: '',
+          updated_at: ""
+        }
+        this.justsysp(black)
+        this.justchange(test)
       }
     }
 
@@ -178,6 +264,9 @@ export default {
       display: flex;
       margin-bottom: 5px;
       padding: 15px;
+    }
+    .inputlist{
+      display: flex;
     }
     .inputbox{
       width: 200px;
