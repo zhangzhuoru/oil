@@ -173,6 +173,39 @@ export default {
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
+      },
+      //创建商人
+      async creman(){
+        // console.log(key, keyPath)
+       try {
+         //创建商人
+         let res = await this.$http.post("vouchers/createVoucherUser",this.ruleForm)
+         this.res = res
+         console.log('创建商人',res)
+        } catch (err) {
+                console.log(err)
+                alert('请求出错！')
+              }
+          // if(this.res.)
+        if(this.res.data.code === 0){
+          this.res=this.res.data
+          this.justchange('2')
+          console.log(this.res.code)
+          // this.total=this.shengfen.data.data.last_page
+          this.$message.success('创建成功！')
+        }else if (this.res.data.code === 3){
+          this.$message.error('创建失败！'+this.res.data.message)
+        }
+        else{
+          // console.log(this.shengfen.status=='201')
+          this.$message.error('创建失败！')
+          // this.$message.error(this.res.message)
+        }
+        // console.log('shengfen',this.shengfen.data.data)
+
+      },
+      justchange(test){
+          this.$emit('justchange' , test);
       }
     }
 }

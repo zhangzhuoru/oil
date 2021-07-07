@@ -103,13 +103,11 @@ export default {
   },
   created(){
     console.log(this.srmsg)
-    if(this.srmsg.voucher_name){
       let str = JSON.stringify(this.srmsg) //系列化对象
       this.ruleForm = JSON.parse(str) //还原
       this.ruleForm.voucher_password = ''
       // this.updata =true
       console.log('ruleForm',this.ruleForm)
-    }
   },
     methods: {
       submitForm(formName) {

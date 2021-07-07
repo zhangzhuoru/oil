@@ -2,25 +2,20 @@
   <div class="creditinstall">
     <div class="frombox">
       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-        <el-form-item label="金额" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="余额" prop="amount">
+          <el-input v-model="ruleForm.amount"></el-input>
         </el-form-item>
-        <el-form-item label="凭证" prop="name">
-          <el-upload
-            class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
-            <img v-if="ruleForm.imageUrl" :src="ruleForm.imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
+        <el-form-item label="允许挂单">
+          <el-radio-group v-model="ruleForm.type">
+             <el-radio :label="0">是</el-radio>
+             <el-radio :label="1">否</el-radio>
+           </el-radio-group>
         </el-form-item>
-        <el-form-item label="备注" prop="desc">
-          <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+        <el-form-item label="备注" prop="description">
+          <el-input type="textarea" v-model="ruleForm.description"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">添加授信</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -32,29 +27,42 @@
 <script>
 export default {
   name: 'creditinstall',
+  //父组件通过props属性传递进来的数据
+  props: {
+      srmsg: {}
+  },
   data() {
     return {
       ruleForm: {
-        name: '',
-        imageUrl: '',
-        desc: ''
+        amount: '',
+        type: 1,
+        description: ''
       },
+      res:'',
       rules: {
-        name: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ],
-        desc: [
-          { required: true, message: '请填写活动形式', trigger: 'blur' }
+        amount: [
+          { required: true, message: '请输入余额', trigger: 'blur' },
+          { min: 3, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ]
       }
     }
+  },
+  created(){
+    console.log(this.srmsg)
+      let str = JSON.stringify(this.srmsg) //系列化对象
+     let newsrmsg = JSON.parse(str) //还原
+      this.ruleForm.amount = newsrmsg.amount
+      this.ruleForm.type = newsrmsg.type
+      this.ruleForm.description = newsrmsg.description
+      this.ruleForm.voucherUserId = newsrmsg.voucher_user_id
+      // this.updata =true
+      console.log('ruleForm',this.ruleForm)
   },
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.addtrust()
           } else {
             console.log('error submit!!');
             return false;
@@ -62,23 +70,44 @@ export default {
         });
       },
       resetForm(formName) {
-        this.$refs[formName].resetFields();
+        this.ruleForm = {
+          amount: '',
+          type: 1,
+          description: ''
+        }
       },
       handleAvatarSuccess(res, file) {
         this.ruleForm.imageUrl = URL.createObjectURL(file.raw);
       },
-      beforeAvatarUpload(file) {
-        console.log('file.type:'+file.type)
-        const isJPG = file.type === 'image/jpeg'||'image/png';
-        const isLt2M = file.size / 1024 / 1024 < 2;
+      //添加授信
+      async addtrust(){
+        // console.log(key, keyPath)
+       try {
+         //添加授信
+         let res = await this.$http.post("vouchers/updateVoucherUserAmount",this.ruleForm)
+         this.res = res
+         // console.log('添加授信',res,this.ruleForm)
+        } catch (err) {
+                console.log(err)
+                alert('请求出错！')
+              }
+          // if(this.res.)
+        if(this.res.data.code === 0){
+          this.res=this.res.data
+          this.justchange('2')
+          // console.log(this.res.code)
+          // this.total=this.shengfen.data.data.last_page
+          this.$message.success('添加授信成功！')
+        }else if (this.res.data.code === 3){
+          this.$message.error('添加授信失败！'+this.res.data.message)
+        }
+        else{
+          this.$message.error('添加授信失败！')
+        }
 
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
+      },
+      justchange(test){
+          this.$emit('justchange' , test);
       }
     }
 }

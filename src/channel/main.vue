@@ -76,11 +76,11 @@
     <Chanelist v-if="open=='1'" @justchange="justchange" @justmsg="justmsg" @justchanger="justchanger" @justqdid="justqdid"></Chanelist>
     <Channeinstall v-if="open=='1-1'" :qdmsg="qdmsg" @justchange="justchange"></Channeinstall>
     <Goodslist v-if="open=='1-2'" @justchange="justchange" @justsysp = 'justsysp' :qdid="qdid"></Goodslist>
-    <Goodsinstall v-if="open=='1-3'" :qdid="qdid" :syspmsg="syspmsg" @justchange="justchange" ></Goodsinstall>
+    <Goodsinstall v-if="open=='1-3'" :shengfen="shengfen" :qdid="qdid" :syspmsg="syspmsg" @justchange="justchange" ></Goodsinstall>
     <Businesslist v-if="open=='2'" @justchange="justchange" @justsrmsg="justsrmsg"></Businesslist>
     <Businessinstall v-if="open=='2-1'" :srmsg="srmsg" @justchange="justchange"></Businessinstall>
-    <Creditinstall v-if="open=='2-2'"></Creditinstall>
-    <Downgoodslist v-if="open=='2-3'"></Downgoodslist>
+    <Creditinstall v-if="open=='2-2'" :srmsg="srmsg" @justchange="justchange"></Creditinstall>
+    <Downgoodslist v-if="open=='2-3'" :srmsg="srmsg" @justchange="justchange" :shengfen="shengfen"></Downgoodslist>
     <Goodsgroup v-if="open=='3'"></Goodsgroup>
     <Goodsgroupinstall v-if="open=='3-1'"></Goodsgroupinstall>
 
@@ -141,6 +141,7 @@ export default {
         editableTabsValue: '1',
         editableTabs: [],
         tabIndex: 1,
+        shengfen:[],
         // isCollapse:true,
         target:{
           '0':'首页',
@@ -167,6 +168,9 @@ export default {
         console.log(newv,oldv)
         this.lastopen=oldv
       }
+    },
+    created(){
+      this.getshengfen()
     },
   methods: {
     handleOpen(key, keyPath){
@@ -311,6 +315,30 @@ export default {
     justsrmsg(msg){
        console.log(msg)
        this.srmsg=msg
+    },
+    async getshengfen(){
+      // console.log(key, keyPath)
+     try {
+       //获取省份
+       let res = await this.$http.get("provinces")
+       this.shengfen = res
+       // console.log(res)
+      } catch (err) {
+              console.log(err)
+              alert('请求出错！')
+            }
+        // if(this.shengfen.)
+      if(this.shengfen.status === 201||this.shengfen.status === 200){
+        this.shengfen=this.shengfen.data.data
+        console.log(this.shengfen)
+        // this.total=this.shengfen.data.data.last_page
+        // this.$message.success('请求成功！')
+      }else{
+        // console.log(this.shengfen.status=='201')
+        this.$message.error('请求失败！')
+      }
+      // console.log('shengfen',this.shengfen.data.data)
+
     }
   },
   components: {

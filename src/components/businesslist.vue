@@ -66,7 +66,11 @@
                 @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
               <el-button
                 size="mini"
-                type="danger"
+                type="primary"
+                @click="install(scope.$index, scope.row)">商品设置</el-button>
+              <el-button
+                size="mini"
+                type="success"
                 @click="handlexing(scope.$index, scope.row)">授信</el-button>
             </template>
           </el-table-column>
@@ -139,6 +143,7 @@ export default {
           voucher_secret: '',
           voucher_user_id: ''
         }
+        console.log('black',black)
         this.justsrmsg(black)
         this.justchange('2-1')
       },
@@ -147,7 +152,13 @@ export default {
         this.justchange('2-1')
         console.log(index, row);
       },
+      install(index, row) {
+        this.justsrmsg(row)
+        this.justchange('2-3')
+        console.log(index, row);
+      },
       handlexing(index, row) {
+        this.justsrmsg(row)
         console.log(index, row);
         this.justchange('2-2')
       },

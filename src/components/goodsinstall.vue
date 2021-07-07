@@ -44,6 +44,7 @@ export default {
   name: 'goodsinstall',
   props: {
       qdid: {},
+      shengfen:[],
       syspmsg:{}
   },
   data() {
@@ -56,8 +57,8 @@ export default {
         good_code:'',
         type:''
       },
+
       res:'',
-      shengfen:[],
       rules: {
         discount: [
           { required: true, message: '请输入折扣', trigger: 'blur' },
@@ -75,12 +76,12 @@ export default {
         good_code: [
           { required: true, message: '请输入产品编码', trigger: 'blur' }
         ]
-      }
+      },
     }
   },
   created(){
     console.log(this.qdid,this.syspmsg)
-    this.getshengfen()
+    // this.getshengfen()
     console.log('this.syspmsg.province',this.syspmsg.province)
     if(this.syspmsg.amount){
       let str = JSON.stringify(this.syspmsg) //系列化对象
@@ -130,31 +131,7 @@ export default {
 
         // this.$refs[formName].resetFields();
       },
-      //获取省份
-      async getshengfen(){
-        // console.log(key, keyPath)
-       try {
-         //获取省份
-         let res = await this.$http.get("provinces")
-         this.shengfen = res
-         // console.log(res)
-        } catch (err) {
-                console.log(err)
-                alert('请求出错！')
-              }
-          // if(this.shengfen.)
-        if(this.shengfen.status === 201||this.shengfen.status === 200){
-          this.shengfen=this.shengfen.data.data
-          console.log(this.shengfen)
-          // this.total=this.shengfen.data.data.last_page
-          // this.$message.success('请求成功！')
-        }else{
-          // console.log(this.shengfen.status=='201')
-          this.$message.error('请求失败！')
-        }
-        // console.log('shengfen',this.shengfen.data.data)
 
-      },
       //创建商品
       async cregoods(){
         // console.log(key, keyPath)
